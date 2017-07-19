@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum HIT_TYPE { DAMAGE, HEAL, GRAZE }
+
 public class PlayerUI : MonoBehaviour {
     public Light mainLight;
     public Text healthText;
@@ -13,19 +15,23 @@ public class PlayerUI : MonoBehaviour {
     public Color hurtPanelDamageColor;
     public Color hurtPanelHealColor;
 
+    public Camera mainCamera;
+    public Canvas mainUI;
+    public HitText hitTextPrefab;
+
     public Color positiveColour;
     public Color negativeColour;
 
 
     public float Score {
         set {
-            scoreText.text = Mathf.CeilToInt(value).ToString();
+            scoreText.text = FloatToUIString(value);
         }
     }
 
     public float Health {
         set {
-            healthText.text = Mathf.CeilToInt(value).ToString();
+            healthText.text = FloatToUIString(value);
         }
     }
 
@@ -52,8 +58,30 @@ public class PlayerUI : MonoBehaviour {
         deadMenu.enabled = false;
         GetComponent<Player>().StartGame();
     }
+    
+    public void OnGraze() {
+        ShowHitText("Close!", Color.white);
+    }
 
-    public void FlashHurtPanel(bool heal) {
+    public void OnHit(float hp) {
+        bool heal = hp > 0;
+        ShowHitText(FloatToUIString(Mathf.Abs(hp)), heal ? Color.green : Color.red);
+        FlashHurtPanel(heal);
+    }
+
+    private static string FloatToUIString(float value) {
+        return Mathf.CeilToInt(value).ToString();
+    }
+
+    private void ShowHitText(string text, Color colour) {
+        HitText ht = Instantiate(hitTextPrefab, mainUI.transform);
+        Vector2 screenPos = mainCamera.WorldToScreenPoint(transform.position);
+        screenPos.x /= mainCamera.pixelWidth;
+        screenPos.y /= mainCamera.pixelHeight;
+        ht.DisplayHitText(text, colour, screenPos);
+    }
+
+    private void FlashHurtPanel(bool heal) {
         if (heal) {
             hurtPanel.color = hurtPanelDamageColor;
         } else {

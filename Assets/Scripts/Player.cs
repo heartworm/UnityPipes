@@ -16,7 +16,7 @@ public class Player : MonoBehaviour {
     public float pipeSpeedIncreaseFactor;
     
     
-    private float distance = 0;
+    private float score = 0;
     private float pipeSpeed;
     private bool dead = true;
 
@@ -46,7 +46,7 @@ public class Player : MonoBehaviour {
         SetPosition(0);
         positive = true;
         pHealth.OnInit();
-        distance = 0;
+        score = 0;
         pUI.SetPositive(positive);
         switchCooldownCounter = switchCooldown;
         pipeSpeed = minPipeSpeed;
@@ -75,7 +75,7 @@ public class Player : MonoBehaviour {
 
             float movedDistance = pipeSpeed * Time.deltaTime;
             pipeSystem.MoveSystem(movedDistance);
-            distance += movedDistance;
+            score += movedDistance;
 
             switchCooldownCounter = Mathf.Clamp(switchCooldownCounter + Time.deltaTime, 0, switchCooldown);
 
@@ -89,7 +89,7 @@ public class Player : MonoBehaviour {
     }
 
     private void UpdateUI() {
-        pUI.Score = distance;
+        pUI.Score = score;
         pUI.Health = pHealth.Health;
     }
 
@@ -100,6 +100,7 @@ public class Player : MonoBehaviour {
 
     private void TogglePositive() {
         positive = !positive;
+        print(string.Format("Toggled positive mode to {0}", positive));
         pUI.SetPositive(positive);
     }
 
@@ -108,11 +109,21 @@ public class Player : MonoBehaviour {
         return pipePrefab.pipeRadius * Mathf.Cos(anglePerSegment / 2);
     }
 
-    public void HitPlayer(float hp) {
+    public void Hit(float hp) {
         float dHp = positive ? hp : -hp;
+        print(string.Format("Hit player, changing hp by {0}", hp));
+
         pHealth.IncrementHealth(dHp);
-        pUI.FlashHurtPanel(dHp > 0);
+        pUI.OnHit(dHp);
     }
 
+    public void Graze(int points) {
+        //grazes shouldn't be rewarded if they're meant to heal
+        if (positive) {
+            print(string.Format("Grazed for {0} points", points));
+            score += points;
+            pUI.OnGraze();
+        }
+    }
 
 }
