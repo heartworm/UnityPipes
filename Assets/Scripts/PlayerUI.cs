@@ -7,7 +7,7 @@ public enum HIT_TYPE { DAMAGE, HEAL, GRAZE }
 
 public class PlayerUI : MonoBehaviour {
     public Light mainLight;
-    public Text healthText;
+    public HealthBar healthBar;
     public Text scoreText;
     public Canvas deadMenu;
     public Image hurtPanel;
@@ -31,7 +31,7 @@ public class PlayerUI : MonoBehaviour {
 
     public float Health {
         set {
-            healthText.text = FloatToUIString(value);
+            healthBar.SetHealth(value);
         }
     }
 
@@ -69,7 +69,7 @@ public class PlayerUI : MonoBehaviour {
         FlashHurtPanel(heal);
     }
 
-    private static string FloatToUIString(float value) {
+    public static string FloatToUIString(float value) {
         return Mathf.CeilToInt(value).ToString();
     }
 

@@ -30,8 +30,10 @@ public class RandomRotationPlacer : ItemPlacer {
 
         Vector3 pipeMouthRel = Vector3.up * pipe.CurveRadius;
         item.transform.Translate(pipeMouthRel);
-        Vector3 curveAxis = pipe.transform.TransformDirection(Vector3.back);
-        Vector3 pipeAxis = pipe.transform.TransformDirection(Vector3.right);
+        //Vector3 curveAxis = pipe.transform.TransformDirection(Vector3.back);
+        Vector3 curveAxis = -pipe.transform.forward; 
+        //Vector3 pipeAxis = pipe.transform.TransformDirection(Vector3.right);
+        Vector3 pipeAxis = pipe.transform.right;
         item.transform.RotateAround(pipe.transform.TransformPoint(pipeMouthRel), pipeAxis, pipeRotation);
         item.transform.RotateAround(pipe.transform.position, curveAxis, curveRotation);
     }

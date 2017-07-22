@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
 
     public float floatingHeight;
     public float moveSpeed;
+    public float slowMultiplier;
     public float maxPipeSpeed;
     public float minPipeSpeed;
     public float pipeSpeedIncreaseFactor;
@@ -59,10 +60,14 @@ public class Player : MonoBehaviour {
 
     private void Update() {
         if (!dead) {
-            float newAngle = (currentAngle - Input.GetAxis("Mouse X") * moveSpeed * Time.deltaTime) % (2 * Mathf.PI);
+            float moveCommand = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime;
+            if (Input.GetButton("Slow")) {
+                moveCommand *= slowMultiplier;
+            }
+            float newAngle = (currentAngle - moveCommand) % (2 * Mathf.PI);
             SetPosition(newAngle);
 
-            if (Input.GetMouseButtonDown(0) && switchCooldownCounter == switchCooldown) {
+            if (Input.GetButtonDown("SwitchPolarity") && switchCooldownCounter == switchCooldown) {
                 TogglePositive();
                 switchCooldownCounter = 0;
             }
